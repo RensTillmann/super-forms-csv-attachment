@@ -223,6 +223,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
         */
         public static function add_csv_attachment( $attachments, $data ) {
             if( (isset($data['settings']['csv_attachment_enable'])) && ($data['settings']['csv_attachment_enable']=='true') ) {
+                if(!isset($data['settings']['csv_attachment_name'])) $data['settings']['csv_attachment_name'] = 'super-csv-attachment';
                 if(!isset($data['settings']['csv_attachment_save_as'])) $data['settings']['csv_attachment_save_as'] = 'entry_value';
                 if(!isset($data['settings']['csv_attachment_exclude'])) $data['settings']['csv_attachment_exclude'] = '';
                 $excluded_fields = explode( "\n", $data['settings']['csv_attachment_exclude'] );
@@ -262,7 +263,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                         }
                     }
                 }
-                $file_location = '/uploads/php/files/super-csv-attachment.csv';
+                $file_location = '/uploads/php/files/' . sanitize_title_with_dashes($data['settings']['csv_attachment_name']) . '.csv';
                 $source = urldecode( SUPER_PLUGIN_DIR . $file_location );
                 if( file_exists( $source ) ) {
                     SUPER_Common::delete_file( $source );
@@ -323,6 +324,13 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                             'true' => __( 'Send CSV attachment with form data to the admin email', 'super-forms' ),
                         ),
                         'filter' => true
+                    ),
+                    'csv_attachment_name' => array(
+                        'name'=> __( 'The filename of the attachment', 'super-forms' ),
+                        'default'=> ( !isset( $attributes['csv_attachment_name']) ? 'super-csv-attachment' : $attributes['csv_attachment_name']),
+                        'filter'=>true,
+                        'parent'=>'csv_attachment_enable',
+                        'filter_value'=>'true'
                     ),
                     'csv_attachment_save_as' => array(
                         'name'=> __( 'Choose what value to save for checkboxes & radio buttons', 'super-forms' ),
