@@ -327,7 +327,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                     ),
                     'csv_attachment_name' => array(
                         'name'=> __( 'The filename of the attachment', 'super-forms' ),
-                        'default'=> ( !isset( $attributes['csv_attachment_name']) ? 'super-csv-attachment' : $attributes['csv_attachment_name']),
+                        'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_name', $settings['settings'], 'super-csv-attachment' ),
                         'filter'=>true,
                         'parent'=>'csv_attachment_enable',
                         'filter_value'=>'true'
@@ -335,7 +335,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                     'csv_attachment_save_as' => array(
                         'name'=> __( 'Choose what value to save for checkboxes & radio buttons', 'super-forms' ),
                         'desc'=> __( 'When editing a field you can change these settings', 'super-forms' ),
-                        'default'=> ( !isset( $attributes['csv_attachment_save_as']) ? 'admin_email_value' : $attributes['csv_attachment_save_as']),
+                        'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_save_as', $settings['settings'], 'admin_email_value' ),
                         'type'=>'select', 
                         'values'=>array(
                             'admin_email_value' => __( 'Save the admin email value (default)', 'super-forms' ),
@@ -349,7 +349,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                     'csv_attachment_exclude' => array(
                         'name'=> __( 'Exclude fields from CSV file (put each field name on a new line)', 'super-forms' ),
                         'desc'=> __( 'When saving the CSV these fields will be excluded from the CSV file', 'super-forms' ),
-                        'default'=> ( !isset( $attributes['csv_attachment_exclude']) ? '' : $attributes['csv_attachment_exclude']),
+                        'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_exclude', $settings['settings'], '' ),
                         'type'=>'textarea', 
                         'filter'=>true,
                         'parent'=>'csv_attachment_enable',
