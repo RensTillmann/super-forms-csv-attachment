@@ -11,7 +11,7 @@
  * Plugin Name: Super Forms - CSV Attachment
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Sends a CSV file with the form data to the admin email as an attachment
- * Version:     1.1.0
+ * Version:     1.1.1
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,7 +37,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
          *
          *  @since      1.0.0
         */
-        public $version = '1.1.0';
+        public $version = '1.1.1';
 
 
         /**
@@ -227,8 +227,13 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                 if(!isset($data['settings']['csv_attachment_save_as'])) $data['settings']['csv_attachment_save_as'] = 'entry_value';
                 if(!isset($data['settings']['csv_attachment_exclude'])) $data['settings']['csv_attachment_exclude'] = '';
                 $excluded_fields = explode( "\n", $data['settings']['csv_attachment_exclude'] );
-                $delimiter = ',';
-                $enclosure = '"';
+
+                // @since 1.1.1 - custom settings for delimiter and enclosure
+                if(!isset($data['settings']['csv_attachment_delimiter'])) $data['settings']['csv_attachment_delimiter'] = ',';
+                if(!isset($data['settings']['csv_attachment_enclosure'])) $data['settings']['csv_attachment_enclosure'] = '"';
+                $delimiter = $data['settings']['csv_attachment_enclosure'];
+                $enclosure = $data['settings']['csv_attachment_enclosure'];
+
                 $rows = array();
                 foreach( $data['data'] as $k => $v ) {
                     if( !in_array( $v['name'], $excluded_fields ) ) {
@@ -258,7 +263,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                                 }elseif( ($data['settings']['csv_attachment_save_as']=='confirm_email_value') && (isset($v['confirm_value'])) ) {
                                     $v['value'] = $v['confirm_value'];
                                 }
-                                $rows[$k+1][] = $v['value'];
+                                $rows[$k+1][] = stripslashes($v['value']);
                             }
                         }
                     }
@@ -351,6 +356,24 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                         'desc'=> __( 'When saving the CSV these fields will be excluded from the CSV file', 'super-forms' ),
                         'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_exclude', $settings['settings'], '' ),
                         'type'=>'textarea', 
+                        'filter'=>true,
+                        'parent'=>'csv_attachment_enable',
+                        'filter_value'=>'true'
+                    ),
+
+                    // @since 1.1.1 - custom settings for delimiter and enclosure
+                    'csv_attachment_delimiter' => array(
+                        'name'=> __( 'Custom delimiter', 'super-forms' ),
+                        'desc' => __( 'Set a custom delimiter to seperate the values on each row' ), 
+                        'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_delimiter', $settings['settings'], ',' ),
+                        'filter'=>true,
+                        'parent'=>'csv_attachment_enable',
+                        'filter_value'=>'true'
+                    ),
+                    'csv_attachment_enclosure' => array(
+                        'name'=> __( 'Custom enclosure', 'super-forms' ),
+                        'desc' => __( 'Set a custom enclosure character for values' ), 
+                        'default'=> SUPER_Settings::get_value( 0, 'csv_attachment_enclosure', $settings['settings'], '"' ),
                         'filter'=>true,
                         'parent'=>'csv_attachment_enable',
                         'filter_value'=>'true'
