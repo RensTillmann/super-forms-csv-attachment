@@ -11,7 +11,7 @@
  * Plugin Name: Super Forms - CSV Attachment
  * Plugin URI:  http://codecanyon.net/item/super-forms-drag-drop-form-builder/13979866
  * Description: Sends a CSV file with the form data to the admin email as an attachment
- * Version:     1.1.1
+ * Version:     1.1.2
  * Author:      feeling4design
  * Author URI:  http://codecanyon.net/user/feeling4design
 */
@@ -37,7 +37,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
          *
          *  @since      1.0.0
         */
-        public $version = '1.1.1';
+        public $version = '1.1.2';
 
 
         /**
@@ -223,7 +223,12 @@ if(!class_exists('SUPER_CSV_Attachment')) :
         */
         public static function add_csv_attachment( $attachments, $data ) {
             if( (isset($data['settings']['csv_attachment_enable'])) && ($data['settings']['csv_attachment_enable']=='true') ) {
-                if(!isset($data['settings']['csv_attachment_name'])) $data['settings']['csv_attachment_name'] = 'super-csv-attachment';
+                if(!isset($data['settings']['csv_attachment_name'])) {
+                    $csv_attachment_name = 'super-csv-attachment';
+                }else{
+                    // @since 1.1.2 - compatibility with {tags}
+                    $csv_attachment_name = SUPER_Common::email_tags( $data['settings']['csv_attachment_name'], $data['data'], $data['settings'] );
+                }
                 if(!isset($data['settings']['csv_attachment_save_as'])) $data['settings']['csv_attachment_save_as'] = 'entry_value';
                 if(!isset($data['settings']['csv_attachment_exclude'])) $data['settings']['csv_attachment_exclude'] = '';
                 $excluded_fields = explode( "\n", $data['settings']['csv_attachment_exclude'] );
@@ -268,7 +273,7 @@ if(!class_exists('SUPER_CSV_Attachment')) :
                         }
                     }
                 }
-                $file_location = '/uploads/php/files/' . sanitize_title_with_dashes($data['settings']['csv_attachment_name']) . '.csv';
+                $file_location = '/uploads/php/files/' . sanitize_title_with_dashes($csv_attachment_name) . '.csv';
                 $source = urldecode( SUPER_PLUGIN_DIR . $file_location );
                 if( file_exists( $source ) ) {
                     SUPER_Common::delete_file( $source );
